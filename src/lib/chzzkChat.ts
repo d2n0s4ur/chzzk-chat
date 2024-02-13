@@ -1,9 +1,15 @@
 export type messageHandler = (
   badges: string[],
   nick: string,
+  message: string
+) => void;
+
+export type donationHandler = (
+  badges: string[],
+  nick: string,
   message: string,
-  isDonation: boolean,
-  donationAmount?: number
+  isAnonymous: boolean,
+  amount: number
 ) => void;
 
 const chzzkIRCUrl = "wss://kr-ss3.chat.naver.com/chat";
@@ -12,7 +18,7 @@ export class ChzzkChat {
   private initialization;
   ws: WebSocket | undefined;
   messageHandler: messageHandler | undefined;
-  donationHandler: messageHandler | undefined;
+  donationHandler: donationHandler | undefined;
   chzzkChannelId: string;
   chatChannelAccessToken: string;
   chatChannelId: string;
@@ -23,9 +29,9 @@ export class ChzzkChat {
     this.messageHandler = handler;
   };
 
-  addDonationHandler = (handler: messageHandler) => {
+  addDonationHandler = (handler: donationHandler) => {
     this.donationHandler = handler;
-  }
+  };
 
   getChatChannelId = async (chzzkChannelId: string) => {
     const url = `https://api.chzzk.naver.com/polling/v2/channels/${chzzkChannelId}/live-status`;
@@ -115,11 +121,10 @@ export class ChzzkChat {
               if (!this.messageHandler) return;
               this.messageHandler(
                 this.parseBadgeUrl(profile.activityBadges as string[]),
-                profile ? profile.nickname : "익명",
-                msg.msgTypeCode === "CBOTBLIND"
+                profile.nickname,
+                msg.msgStatusType === "CBOTBLIND"
                   ? "클린봇에 의해 삭제된 메시지입니다."
-                  : msg.msg,
-                false
+                  : msg.msg
               );
               break;
             case 93102: // donation message
@@ -127,9 +132,9 @@ export class ChzzkChat {
               if (!this.donationHandler) return;
               this.donationHandler(
                 this.parseBadgeUrl(profile.activityBadges as string[]),
-                profile ? profile.nickname : "익명",
+                msg.uid !== "anonymous" ? profile.nickname : "익명의 후원자",
                 msg.msg,
-                true,
+                msg.uid === "anonymous",
                 extras.payAmount
               );
               break;
