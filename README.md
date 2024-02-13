@@ -1,6 +1,5 @@
 # Chzzk Chat Crawler
 
----
 
 <img alt="chzzk_logo" src="./img/chzzk_logo.svg" style="width: 50%">
 
@@ -8,7 +7,6 @@ Javascript를 통해 치지직 채팅을 크롤링하는 코드입니다.
 
 # Install
 
----
 
 ## Node
 
