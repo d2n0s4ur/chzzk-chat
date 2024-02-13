@@ -32,4 +32,6 @@ const messageHandler: messageHandler = (
     `${nick}: ${message} ${isDonation ? `(${donationAmount}원)` : ""}`
   );
 };
+
+chzzkChat.addMessageHandler(messageHandler);
 ```
