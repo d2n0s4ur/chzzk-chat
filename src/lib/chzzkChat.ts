@@ -11,7 +11,8 @@ const chzzkIRCUrl = "wss://kr-ss3.chat.naver.com/chat";
 export class ChzzkChat {
   private initialization;
   ws: WebSocket | undefined;
-  messageHandler: messageHandler;
+  messageHandler: messageHandler | undefined;
+  donationHandler: messageHandler | undefined;
   chzzkChannelId: string;
   chatChannelAccessToken: string;
   chatChannelId: string;
@@ -21,6 +22,10 @@ export class ChzzkChat {
   addMessageHandler = (handler: messageHandler) => {
     this.messageHandler = handler;
   };
+
+  addDonationHandler = (handler: messageHandler) => {
+    this.donationHandler = handler;
+  }
 
   getChatChannelId = async (chzzkChannelId: string) => {
     const url = `https://api.chzzk.naver.com/polling/v2/channels/${chzzkChannelId}/live-status`;
@@ -67,8 +72,6 @@ export class ChzzkChat {
     this.chatChannelAccessToken = "";
     this.sid = "";
     this.uuid = "";
-    // this.ws = undefined;
-    this.messageHandler = () => {};
     this.initialization = this.init();
   }
 
@@ -108,7 +111,7 @@ export class ChzzkChat {
         data.bdy.forEach((msg: any) => {
           const profile = JSON.parse(msg.profile);
           switch (data.cmd) {
-            case 93101:
+            case 93101: // default message
               if (!this.messageHandler) return;
               this.messageHandler(
                 this.parseBadgeUrl(profile.activityBadges as string[]),
@@ -119,11 +122,11 @@ export class ChzzkChat {
                 false
               );
               break;
-            case 93102:
+            case 93102: // donation message
               const extras = JSON.parse(data.bdy[0].extras);
-              if (!this.messageHandler) return;
-              this.messageHandler(
-                [],
+              if (!this.donationHandler) return;
+              this.donationHandler(
+                this.parseBadgeUrl(profile.activityBadges as string[]),
                 profile ? profile.nickname : "익명",
                 msg.msg,
                 true,
