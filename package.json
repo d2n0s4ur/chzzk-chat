@@ -1,7 +1,7 @@
 {
   "name": "@d2n0s4ur/chzzk-chat",
-  "version": "1.1.0",
-  "description": "chzzk chat crawler",
+  "version": "1.1.1",
+  "description": "chzzk-chat: 자바스크립트 개발자를 위한 chzzk 채팅 비공식 라이브러리",
   "main": "dist/cjs/index.js",
   "module": "dist/mjs/index.js",
   "types": "dist/index.d.ts",
@@ -23,9 +23,13 @@
     "chzzk",
     "chat",
     "crawler",
+    "javascript",
+    "typescript",
     "치지직",
     "채팅",
-    "크롤링"
+    "크롤링",
+    "자바스크립트",
+    "타입스크립트"
   ],
   "author": "d2n0s4ur",
   "license": "ISC",
