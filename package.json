@@ -1,0 +1,40 @@
+{
+  "name": "@d2n0s4ur/chzzk-chat",
+  "version": "1.0.0",
+  "description": "chzzk chat crawler",
+  "main": "dist/cjs/index.js",
+  "module": "dist/mjs/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/mjs/index.js",
+      "require": "./dist/cjs/index.js"
+    }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -fr dist/* && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json && ./fixup.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/d2n0s4ur/chzzk-chat.git"
+  },
+  "keywords": [
+    "chzzk",
+    "chat",
+    "crawler",
+    "치지직",
+    "채팅",
+    "크롤링"
+  ],
+  "author": "d2n0s4ur",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/d2n0s4ur/chzzk-chat/issues"
+  },
+  "homepage": "https://github.com/d2n0s4ur/chzzk-chat#readme",
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  },
+  "type": "module"
+}
