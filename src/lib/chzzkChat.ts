@@ -25,6 +25,29 @@ export class ChzzkChat {
   sid: string;
   uuid: string;
 
+  init = async () => {
+    this.chatChannelId = await this.getChatChannelId(this.chzzkChannelId);
+    this.chatChannelAccessToken = await this.getChatChannelAccessToken(
+      this.chatChannelId
+    );
+
+    this.ws = new WebSocket(chzzkIRCUrl);
+
+    this.ws.onopen = this.onOpen.bind(this);
+    this.ws.onmessage = this.onMessage.bind(this);
+    this.ws.onclose = this.onClose.bind(this);
+    this.ws.onerror = this.onError.bind(this);
+  };
+
+  constructor(chzzkChannelId: string) {
+    this.chzzkChannelId = chzzkChannelId;
+    this.chatChannelId = "";
+    this.chatChannelAccessToken = "";
+    this.sid = "";
+    this.uuid = "";
+    this.initialization = this.init();
+  }
+
   addMessageHandler = (handler: messageHandler) => {
     this.messageHandler = handler;
   };
@@ -57,29 +80,6 @@ export class ChzzkChat {
       return b.imageUrl as string;
     });
   };
-
-  init = async () => {
-    this.chatChannelId = await this.getChatChannelId(this.chzzkChannelId);
-    this.chatChannelAccessToken = await this.getChatChannelAccessToken(
-      this.chatChannelId
-    );
-
-    this.ws = new WebSocket(chzzkIRCUrl);
-
-    this.ws.onopen = this.onOpen.bind(this);
-    this.ws.onmessage = this.onMessage.bind(this);
-    this.ws.onclose = this.onClose.bind(this);
-    this.ws.onerror = this.onError.bind(this);
-  };
-
-  constructor(chzzkChannelId: string) {
-    this.chzzkChannelId = chzzkChannelId;
-    this.chatChannelId = "";
-    this.chatChannelAccessToken = "";
-    this.sid = "";
-    this.uuid = "";
-    this.initialization = this.init();
-  }
 
   onOpen(event: Event) {
     if (!this.ws) return;
