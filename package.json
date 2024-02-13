@@ -1,6 +1,6 @@
 {
   "name": "@d2n0s4ur/chzzk-chat",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "chzzk chat crawler",
   "main": "dist/cjs/index.js",
   "module": "dist/mjs/index.js",
