@@ -2,7 +2,7 @@ cp dist/mjs/index.d.ts dist
 
 rm -rf dist/*/index.d.ts 
 mkdir dist/lib
-cp src/lib/chzzkChat.d.ts dist/lib/
+cp dist/mjs/lib/* dist/lib
 
 cat >dist/cjs/package.json <<!EOF
 {

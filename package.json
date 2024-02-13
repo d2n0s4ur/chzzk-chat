@@ -1,6 +1,6 @@
 {
   "name": "@d2n0s4ur/chzzk-chat",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "description": "chzzk-chat: node.js 개발자를 위한 chzzk 채팅 & 후원 비공식 라이브러리",
   "main": "dist/cjs/index.js",
   "module": "dist/mjs/index.js",
