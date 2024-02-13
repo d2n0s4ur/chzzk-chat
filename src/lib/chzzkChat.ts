@@ -1,9 +1,15 @@
 export type messageHandler = (
   badges: string[],
   nick: string,
+  message: string
+) => void;
+
+export type donationHandler = (
+  badges: string[],
+  nick: string,
   message: string,
-  isDonation: boolean,
-  donationAmount?: number
+  isAnonymous: boolean,
+  amount: number
 ) => void;
 
 const chzzkIRCUrl = "wss://kr-ss3.chat.naver.com/chat";
@@ -11,15 +17,43 @@ const chzzkIRCUrl = "wss://kr-ss3.chat.naver.com/chat";
 export class ChzzkChat {
   private initialization;
   ws: WebSocket | undefined;
-  messageHandler: messageHandler;
+  messageHandler: messageHandler | undefined;
+  donationHandler: donationHandler | undefined;
   chzzkChannelId: string;
   chatChannelAccessToken: string;
   chatChannelId: string;
   sid: string;
   uuid: string;
 
+  init = async () => {
+    this.chatChannelId = await this.getChatChannelId(this.chzzkChannelId);
+    this.chatChannelAccessToken = await this.getChatChannelAccessToken(
+      this.chatChannelId
+    );
+
+    this.ws = new WebSocket(chzzkIRCUrl);
+
+    this.ws.onopen = this.onOpen.bind(this);
+    this.ws.onmessage = this.onMessage.bind(this);
+    this.ws.onclose = this.onClose.bind(this);
+    this.ws.onerror = this.onError.bind(this);
+  };
+
+  constructor(chzzkChannelId: string) {
+    this.chzzkChannelId = chzzkChannelId;
+    this.chatChannelId = "";
+    this.chatChannelAccessToken = "";
+    this.sid = "";
+    this.uuid = "";
+    this.initialization = this.init();
+  }
+
   addMessageHandler = (handler: messageHandler) => {
     this.messageHandler = handler;
+  };
+
+  addDonationHandler = (handler: donationHandler) => {
+    this.donationHandler = handler;
   };
 
   getChatChannelId = async (chzzkChannelId: string) => {
@@ -46,31 +80,6 @@ export class ChzzkChat {
       return b.imageUrl as string;
     });
   };
-
-  init = async () => {
-    this.chatChannelId = await this.getChatChannelId(this.chzzkChannelId);
-    this.chatChannelAccessToken = await this.getChatChannelAccessToken(
-      this.chatChannelId
-    );
-
-    this.ws = new WebSocket(chzzkIRCUrl);
-
-    this.ws.onopen = this.onOpen.bind(this);
-    this.ws.onmessage = this.onMessage.bind(this);
-    this.ws.onclose = this.onClose.bind(this);
-    this.ws.onerror = this.onError.bind(this);
-  };
-
-  constructor(chzzkChannelId: string) {
-    this.chzzkChannelId = chzzkChannelId;
-    this.chatChannelId = "";
-    this.chatChannelAccessToken = "";
-    this.sid = "";
-    this.uuid = "";
-    // this.ws = undefined;
-    this.messageHandler = () => {};
-    this.initialization = this.init();
-  }
 
   onOpen(event: Event) {
     if (!this.ws) return;
@@ -108,25 +117,24 @@ export class ChzzkChat {
         data.bdy.forEach((msg: any) => {
           const profile = JSON.parse(msg.profile);
           switch (data.cmd) {
-            case 93101:
+            case 93101: // default message
               if (!this.messageHandler) return;
               this.messageHandler(
                 this.parseBadgeUrl(profile.activityBadges as string[]),
-                profile ? profile.nickname : "익명",
-                msg.msgTypeCode === "CBOTBLIND"
+                profile.nickname,
+                msg.msgStatusType === "CBOTBLIND"
                   ? "클린봇에 의해 삭제된 메시지입니다."
-                  : msg.msg,
-                false
+                  : msg.msg
               );
               break;
-            case 93102:
+            case 93102: // donation message
               const extras = JSON.parse(data.bdy[0].extras);
-              if (!this.messageHandler) return;
-              this.messageHandler(
-                [],
-                profile ? profile.nickname : "익명",
+              if (!this.donationHandler) return;
+              this.donationHandler(
+                this.parseBadgeUrl(profile.activityBadges as string[]),
+                msg.uid !== "anonymous" ? profile.nickname : "익명의 후원자",
                 msg.msg,
-                true,
+                msg.uid === "anonymous",
                 extras.payAmount
               );
               break;
