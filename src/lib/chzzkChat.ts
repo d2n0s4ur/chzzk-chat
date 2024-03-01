@@ -1,3 +1,5 @@
+import { CloseEvent, Event, MessageEvent, WebSocket } from "ws";
+
 export type messageHandler = (
   badges: string[],
   nick: string,
@@ -120,7 +122,9 @@ export class ChzzkChat {
             case 93101: // default message
               if (!this.messageHandler) return;
               this.messageHandler(
-                this.parseBadgeUrl(profile ? profile.activityBadges : undefined),
+                this.parseBadgeUrl(
+                  profile ? profile.activityBadges : undefined
+                ),
                 profile.nickname,
                 msg.msgStatusType === "CBOTBLIND"
                   ? "클린봇에 의해 삭제된 메시지입니다."
@@ -131,7 +135,9 @@ export class ChzzkChat {
               const extras = JSON.parse(data.bdy[0].extras);
               if (!this.donationHandler) return;
               this.donationHandler(
-                this.parseBadgeUrl(profile ? profile.activityBadges : undefined),
+                this.parseBadgeUrl(
+                  profile ? profile.activityBadges : undefined
+                ),
                 msg.uid !== "anonymous" ? profile.nickname : "익명의 후원자",
                 msg.msg,
                 msg.uid === "anonymous",
