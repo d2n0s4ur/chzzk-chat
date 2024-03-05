@@ -1,6 +1,6 @@
 {
   "name": "@d2n0s4ur/chzzk-chat",
-  "version": "1.2.3",
+  "version": "1.3.0",
   "description": "chzzk-chat: node.js 개발자를 위한 chzzk 채팅 & 후원 비공식 라이브러리",
   "main": "dist/cjs/index.js",
   "module": "dist/mjs/index.js",
@@ -22,17 +22,15 @@
   "keywords": [
     "chzzk",
     "chat",
-    "crawler",
     "javascript",
     "typescript",
     "치지직",
     "채팅",
-    "크롤링",
     "자바스크립트",
     "타입스크립트"
   ],
   "author": "d2n0s4ur",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/d2n0s4ur/chzzk-chat/issues"
   },
