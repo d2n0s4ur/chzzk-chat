@@ -69,7 +69,24 @@ const donationHandler: donationHandler = (
 chzzkChat.addDonationHandler(donationHandler);
 ```
 
+### 3. Add subscription Handler
 
+```typescript
+const subscriptionHandler: subscriptionHandler = (
+  badges: string[],
+  nick: string,
+  message: string,
+  month: number,
+  tierName: string,
+  tierNo: number
+) => {
+  console.log(
+    `${nick}님이 ${month}개월 ${tierName}를 구독했습니다: ${message}`
+  );
+};
+
+chzzkChat.addSubscriptionHandler(subscriptionHandler);
+```
 
 사용이 끝난 후, `chzzkChat.close()`를 호출하여 웹소켓을 닫아주세요.
 
