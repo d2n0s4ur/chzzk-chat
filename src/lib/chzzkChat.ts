@@ -14,6 +14,15 @@ export type donationHandler = (
   amount: number
 ) => void;
 
+export type subscriptionHandler = (
+  badges: string[],
+  nick: string,
+  message: string,
+  month: number,
+  tierName: string,
+  tierNo: number
+) => void;
+
 const chzzkIRCUrl = "wss://kr-ss3.chat.naver.com/chat";
 
 export class ChzzkChat {
@@ -21,6 +30,7 @@ export class ChzzkChat {
   ws: WebSocket | undefined;
   messageHandler: messageHandler | undefined;
   donationHandler: donationHandler | undefined;
+  subscriptionHandler: subscriptionHandler | undefined;
   chzzkChannelId: string;
   chatChannelAccessToken: string;
   chatChannelId: string;
@@ -56,6 +66,10 @@ export class ChzzkChat {
 
   addDonationHandler = (handler: donationHandler) => {
     this.donationHandler = handler;
+  };
+
+  addSubscriptionHandler = (handler: subscriptionHandler) => {
+    this.subscriptionHandler = handler;
   };
 
   getChatChannelId = async (chzzkChannelId: string) => {
@@ -132,18 +146,39 @@ export class ChzzkChat {
               );
               break;
             case 93102: // donation message
+              const messageTypeCode = data.bdy[0].messageTypeCode;
               const extras = JSON.parse(data.bdy[0].extras);
-              if (!this.donationHandler) return;
-              this.donationHandler(
-                this.parseBadgeUrl(
-                  profile ? profile.activityBadges : undefined
-                ),
-                msg.uid !== "anonymous" ? profile.nickname : "익명의 후원자",
-                msg.msg,
-                msg.uid === "anonymous",
-                extras.payAmount
-              );
-              break;
+              switch (messageTypeCode) {
+                case 10: // donation message
+                  if (!this.donationHandler) return;
+                  this.donationHandler(
+                    this.parseBadgeUrl(
+                      profile ? profile.activityBadges : undefined
+                    ),
+                    msg.uid !== "anonymous"
+                      ? profile.nickname
+                      : "익명의 후원자",
+                    msg.msg,
+                    msg.uid === "anonymous",
+                    extras.payAmount
+                  );
+                  break;
+                case 11: // subscription message
+                  if (!this.subscriptionHandler) return;
+                  this.subscriptionHandler(
+                    this.parseBadgeUrl(
+                      profile ? profile.activityBadges : undefined
+                    ),
+                    profile.nickname,
+                    msg.msg,
+                    extras.month,
+                    extras.tierName,
+                    extras.tierNo
+                  );
+                  break;
+                default: // unknown message
+                  break;
+              }
           }
         });
     }
