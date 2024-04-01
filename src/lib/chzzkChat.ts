@@ -146,7 +146,7 @@ export class ChzzkChat {
               );
               break;
             case 93102: // donation message
-              const messageTypeCode = data.bdy[0].messageTypeCode;
+              const messageTypeCode = data.bdy[0].msgTypeCode;
               const extras = JSON.parse(data.bdy[0].extras);
               switch (messageTypeCode) {
                 case 10: // donation message
