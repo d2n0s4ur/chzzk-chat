@@ -10,6 +10,13 @@
 
 Javascript를 통해 치지직 채팅을 크롤링하는 코드입니다.
 
+
+# Important Update
+- 각 Handler의 인자가 변경되었습니다.(중괄호로 감쌈) 이전 버전과 호환되지 않습니다.
+- 개발자 여러분들은 바뀐 핸들러 코드를 확인하고 소스코드를 수정해주세요.
+
+
+
 # Install
 
 ## Node
@@ -38,11 +45,11 @@ const chzzkChat = new ChzzkChat("YOUR_CHZZK_USER_HASH");
 ### 1. Add message Handler
 
 ```typescript
-const messageHandler: messageHandler = (
+const messageHandler: messageHandler = ({
   badges: string[],
   nick: string,
   message: string
-) => {
+}) => {
   console.log(`${nick}: ${message}`);
 };
 
@@ -52,13 +59,13 @@ chzzkChat.addMessageHandler(messageHandler);
 ### 2. Add donation Handler
 
 ```typescript
-const donationHandler: donationHandler = (
+const donationHandler: donationHandler = ({
   badges: string[],
   nick: string,
   message: string,
   isAnonymous: boolean,
   amount: number
-) => {
+}) => {
   if (!isAnonymous) {
     console.log(`${nick}님이 ${amount}원을 후원했습니다: ${message}`);
   } else {
@@ -72,14 +79,14 @@ chzzkChat.addDonationHandler(donationHandler);
 ### 3. Add subscription Handler
 
 ```typescript
-const subscriptionHandler: subscriptionHandler = (
+const subscriptionHandler: subscriptionHandler = ({
   badges: string[],
   nick: string,
   message: string,
   month: number,
   tierName: string,
   tierNo: number
-) => {
+}) => {
   console.log(
     `${nick}님이 ${month}개월 ${tierName}를 구독했습니다: ${message}`
   );
