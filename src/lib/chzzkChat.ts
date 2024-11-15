@@ -40,6 +40,16 @@ export type subscriptionHandler = ({
   tierNo: number;
 }) => void;
 
+export type emojiPack = {
+  emojiPackId: string;
+  emojiPackName: string;
+  emojiPackImageUrl: string;
+  emojis: {
+    emojiId: string;
+    imageUrl: string;
+  }[];
+};
+
 const chzzkIRCUrl = "wss://kr-ss3.chat.naver.com/chat";
 
 export class ChzzkChat {
@@ -53,12 +63,14 @@ export class ChzzkChat {
   chatChannelId: string;
   sid: string;
   uuid: string;
+  emojiPacks: emojiPack[] = [];
 
   init = async () => {
     this.chatChannelId = await this.getChatChannelId(this.chzzkChannelId);
     this.chatChannelAccessToken = await this.getChatChannelAccessToken(
       this.chatChannelId
     );
+    this.emojiPacks = await this.getChannelEmojiPacks(this.chzzkChannelId);
 
     this.ws = new WebSocket(chzzkIRCUrl);
 
@@ -106,6 +118,34 @@ export class ChzzkChat {
 
     return data.content.accessToken as string;
   };
+  getChannelEmojiPacks = async (channelId: string) => {
+    const url = `https://api.chzzk.naver.com/service/v1/channels/${channelId}/emoji-packs`;
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "User-Agent": "Mozilla/5.0",
+      },
+    });
+    if (!response.ok) {
+      console.log("Failed to fetch emoji packs");
+      return [];
+    }
+    const data = await response.json();
+    const emojiPacks = data?.content?.emojiPacks as emojiPack[] | undefined;
+    console.log("Fetched emoji packs");
+    return emojiPacks ? emojiPacks : ([] as emojiPack[]);
+  };
+
+  getEmojiUrl = (emojiId: string): string | undefined => {
+    for (const emojiPack of this.emojiPacks) {
+      for (const emoji of emojiPack.emojis) {
+        if (emoji.emojiId === emojiId) {
+          return emoji.imageUrl;
+        }
+      }
+    }
+    return undefined;
+  }
 
   parseBadgeUrl = (badge: any[] | undefined): string[] => {
     if (!badge) return [];
