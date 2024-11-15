@@ -95,6 +95,20 @@ const subscriptionHandler: subscriptionHandler = ({
 chzzkChat.addSubscriptionHandler(subscriptionHandler);
 ```
 
+### 4. get Emoji Url from EmojiID
+```typescript
+const emojiRegex = /:\w+:/g;
+const emojiMatches = message.match(emojiRegex);
+
+if (emojiMatches) {
+    emojiMatches.forEach((emoji) => {
+        const emojiName = emoji.slice(1, -1);
+        const emojiUrl = chzzkChat.getEmojiUrl(emojiName);
+        console.log(emojiUrl);
+    });
+}
+```
+
 사용이 끝난 후, `chzzkChat.close()`를 호출하여 웹소켓을 닫아주세요.
 
 After using the library, please call `chzzkChat.close()` to close the websocket.
