@@ -1,27 +1,44 @@
 import { CloseEvent, Event, MessageEvent, WebSocket } from "ws";
 
-export type messageHandler = (
-  badges: string[],
-  nick: string,
-  message: string
-) => void;
+export type messageHandler = ({
+  badges,
+  nick,
+  message,
+}: {
+  badges: string[];
+  nick: string;
+  message: string;
+}) => void;
 
-export type donationHandler = (
-  badges: string[],
-  nick: string,
-  message: string,
-  isAnonymous: boolean,
-  amount: number
-) => void;
+export type donationHandler = ({
+  badges,
+  nick,
+  message,
+  isAnonymous,
+  amount,
+}: {
+  badges: string[];
+  nick: string;
+  message: string;
+  isAnonymous: boolean;
+  amount: number;
+}) => void;
 
-export type subscriptionHandler = (
-  badges: string[],
-  nick: string,
-  message: string,
-  month: number,
-  tierName: string,
-  tierNo: number
-) => void;
+export type subscriptionHandler = ({
+  badges,
+  nick,
+  message,
+  month,
+  tierName,
+  tierNo,
+}: {
+  badges: string[];
+  nick: string;
+  message: string;
+  month: number;
+  tierName: string;
+  tierNo: number;
+}) => void;
 
 const chzzkIRCUrl = "wss://kr-ss3.chat.naver.com/chat";
 
@@ -135,15 +152,16 @@ export class ChzzkChat {
           switch (data.cmd) {
             case 93101: // default message
               if (!this.messageHandler) return;
-              this.messageHandler(
-                this.parseBadgeUrl(
+              this.messageHandler({
+                badges: this.parseBadgeUrl(
                   profile ? profile.activityBadges : undefined
                 ),
-                profile.nickname,
-                msg.msgStatusType === "CBOTBLIND"
-                  ? "클린봇에 의해 삭제된 메시지입니다."
-                  : msg.msg
-              );
+                nick: profile.nickname,
+                message:
+                  msg.msgStatusType === "CBOTBLIND"
+                    ? "클린봇에 의해 삭제된 메시지입니다."
+                    : msg.msg,
+              });
               break;
             case 93102: // donation message
               const messageTypeCode = data.bdy[0].msgTypeCode;
@@ -151,30 +169,31 @@ export class ChzzkChat {
               switch (messageTypeCode) {
                 case 10: // donation message
                   if (!this.donationHandler) return;
-                  this.donationHandler(
-                    this.parseBadgeUrl(
+                  this.donationHandler({
+                    badges: this.parseBadgeUrl(
                       profile ? profile.activityBadges : undefined
                     ),
-                    msg.uid !== "anonymous"
-                      ? profile.nickname
-                      : "익명의 후원자",
-                    msg.msg,
-                    msg.uid === "anonymous",
-                    extras.payAmount
-                  );
+                    nick:
+                      msg.uid !== "anonymous"
+                        ? profile.nickname
+                        : "익명의 후원자",
+                    message: msg.msg,
+                    isAnonymous: msg.uid === "anonymous",
+                    amount: extras.payAmount,
+                  });
                   break;
                 case 11: // subscription message
                   if (!this.subscriptionHandler) return;
-                  this.subscriptionHandler(
-                    this.parseBadgeUrl(
+                  this.subscriptionHandler({
+                    badges: this.parseBadgeUrl(
                       profile ? profile.activityBadges : undefined
                     ),
-                    profile.nickname,
-                    msg.msg,
-                    extras.month,
-                    extras.tierName,
-                    extras.tierNo
-                  );
+                    nick: profile.nickname,
+                    message: msg.msg,
+                    month: extras.month,
+                    tierName: extras.tierName,
+                    tierNo: extras.tierNo,
+                  });
                   break;
                 default: // unknown message
                   break;
