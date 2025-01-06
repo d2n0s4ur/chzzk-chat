@@ -104,7 +104,12 @@ export class ChzzkChat {
   getChatChannelId = async (chzzkChannelId: string) => {
     const url = `https://api.chzzk.naver.com/polling/v2/channels/${chzzkChannelId}/live-status`;
 
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Origin: "https://chzzk.naver.com",
+      },
+    });
     const data = await response.json();
 
     return data.content.chatChannelId as string;
@@ -113,7 +118,12 @@ export class ChzzkChat {
   getChatChannelAccessToken = async (chatChannelId: string) => {
     const url = `https://comm-api.game.naver.com/nng_main/v1/chats/access-token?channelId=${chatChannelId}&chatType=STREAMING`;
 
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Origin: "https://chzzk.naver.com",
+      },
+    });
     const data = await response.json();
 
     return data.content.accessToken as string;
@@ -123,6 +133,7 @@ export class ChzzkChat {
     const response = await fetch(url, {
       method: "GET",
       headers: {
+        Origin: "https://chzzk.naver.com",
         "User-Agent": "Mozilla/5.0",
       },
     });
@@ -132,7 +143,7 @@ export class ChzzkChat {
     }
     const data = await response.json();
     const emojiPacks = data?.content?.emojiPacks as emojiPack[] | undefined;
-    console.log("Fetched emoji packs");
+
     return emojiPacks ? emojiPacks : ([] as emojiPack[]);
   };
 
@@ -145,7 +156,7 @@ export class ChzzkChat {
       }
     }
     return undefined;
-  }
+  };
 
   parseBadgeUrl = (badge: any[] | undefined): string[] => {
     if (!badge) return [];

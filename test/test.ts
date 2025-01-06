@@ -1,8 +1,7 @@
-import { ChzzkChat } from "../dist/lib/chzzkChat.js";
+import { ChzzkChat } from "@d2n0s4ur/chzzk-chat";
 
 function main() {
-  const chzzkChat = new ChzzkChat("bdc57cc4217173f0e89f63fba2f1c6e5");
-  
+  const chzzkChat = new ChzzkChat("dfffd9591264f43f4cbe3e2e3252c35c");
   chzzkChat.addMessageHandler(({ badges, nick, message }) => {
     console.log(`${nick}: ${message}`);
 
